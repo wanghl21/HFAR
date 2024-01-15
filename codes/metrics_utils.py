@@ -378,7 +378,6 @@ def evaluate_model_qua_baseline_alpha(test_impressions, user_scoring, news_scori
     MRR = []
     nDCG5 = []
     nDCG10 = []
-    # 对比预测impressions里前k个的质量指标
     nNQS1 = []
     nNQS3 = []
     nNQS5 = []
@@ -395,13 +394,6 @@ def evaluate_model_qua_baseline_alpha(test_impressions, user_scoring, news_scori
         nvq = np.array(nvq)
 
         score = np.dot(nvs, uv)
-
-        # 有两种方式加权
-        # 1. 只要有1个指标差 他就需要 减去 1*alpha
-        # nvq_socre = np.sum(nvq ,axis = 1) # 创建一个新的数组，将水平和大于0的元素标记为1，小于等于0的元素标记为0
-        # nvq_socre = np.where(nvq_socre > 0, 1, 0)
-        # nvq_socre = np.squeeze(nvq_socre)
-        # 2. 指标和 *alpha (相当于细粒度一些)
         nvq_socre = np.sum(nvq, axis=1)
         score = score - alpha * nvq_socre
 
@@ -410,12 +402,12 @@ def evaluate_model_qua_baseline_alpha(test_impressions, user_scoring, news_scori
         ndcg5 = ndcg_score(labels, score, k=5)
         ndcg10 = ndcg_score(labels, score, k=10)
 
-        order = np.argsort(score)[::-1]  # 将a中的元素从小到大排列，提取其在排列前对应的index(索引)输出。
+        order = np.argsort(score)[::-1]
 
-        nvq1 = qua_score_overall(nvq, order, k=1)  # 判断前1的质量
-        nvq3 = qua_score_overall(nvq, order, k=3)  # 判断前3的质量
-        nvq5 = qua_score_overall(nvq, order, k=5)  # 判断前5的质量
-        nvq10 = qua_score_overall(nvq, order, k=10)  # 判断前10的质量
+        nvq1 = qua_score_overall(nvq, order, k=1)
+        nvq3 = qua_score_overall(nvq, order, k=3)
+        nvq5 = qua_score_overall(nvq, order, k=5)
+        nvq10 = qua_score_overall(nvq, order, k=10)
 
         AUC.append(auc)
         MRR.append(mrr)
@@ -449,7 +441,6 @@ def evaluate_model_qua(test_impressions, user_scoring, news_scoring, user_qua_sc
     MRR = []
     nDCG5 = []
     nDCG10 = []
-    # 对比预测impressions里前k个的质量指标
     nNQS1 = []
     nNQS5 = []
     nNQS10 = []
@@ -473,9 +464,9 @@ def evaluate_model_qua(test_impressions, user_scoring, news_scoring, user_qua_sc
         ndcg5 = ndcg_score(labels, score, k=5)
         ndcg10 = ndcg_score(labels, score, k=10)
 
-        nvq1 = qua_score(nvq, score, k=1)  # 判断前1的质量
-        nvq5 = qua_score(nvq, score, k=5)  # 判断前1的质量
-        nvq10 = qua_score(nvq, score, k=10)  # 判断前1的质量
+        nvq1 = qua_score(nvq, score, k=1)
+        nvq5 = qua_score(nvq, score, k=5)
+        nvq10 = qua_score(nvq, score, k=10)
 
         AUC.append(auc)
         MRR.append(mrr)
@@ -753,8 +744,7 @@ def evaluate_recall_model_qua_baseline(test_impressions, user_scoring, news_scor
 
 def evaluate_recall_model_qua_ours(test_impressions, user_scoring, news_scoring, news_qua_scorings, news_qua, alpha):
     print("evaluate_recall_model_qua_ours...")
-    # 计算原始模型（不包含quality）
-    # 用user emb和所有news emb做内积 然后把top k拿出来
+
     nNRQS10 = []
     nNRQS50 = []
     nNRQS100 = []
@@ -804,8 +794,6 @@ def evaluate_recall_model_qua_ours(test_impressions, user_scoring, news_scoring,
 
 
 def evaluate_recall_model_qua(test_impressions, user_scoring, news_scoring, user_qua_scoring, news_qua_scoring, news_qua, alpha):
-    # 计算原始模型（包含quality 然后计算score）
-    # 用user emb和所有news emb做内积 然后把top k拿出来
     nNRQS10 = []
     nNRQS50 = []
     nNRQS100 = []
