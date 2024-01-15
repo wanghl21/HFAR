@@ -25,15 +25,14 @@ MAX_SENTENCE = 30
 MAX_ALL = 50
 
 # %%
-# alpha = 1
-# 确保有足够的参数传入
+
 if len(sys.argv) < 3:
-    print("请提供一个参数！")
+    print("Please provide parameters!")
     sys.exit(1)
 alpha = float(sys.argv[2])
-print(f"全局变量alpha的值为：{alpha}")
+print(f"alpha is：{alpha}")
 method = sys.argv[1]
-print(f"全局变量method的值为：{method}")
+print(f"method is：{method}")
 
 # %%
 # Path
@@ -87,10 +86,10 @@ class RecContrastiveTextDataset(Dataset):
         self.label_to_texts = {label: []
                                for label in set(tuple(list(range(0, NUM_CLASS+1))))}
         for text, label in zip(news_titles, qua_labels):
-            label = np.sum(label)  # 目前是求和 判断质量差的程度
+            label = np.sum(label)
             self.label_to_texts[label].append(text)
 
-        self.clicked_news = clicked_news  # 用户真实点击过的新闻
+        self.clicked_news = clicked_news
         self.user_ids = user_ids
         self.sess_ids = sess_ids
         self.rec_labels = rec_labels
@@ -101,7 +100,6 @@ class RecContrastiveTextDataset(Dataset):
     def __get_news(self, docids):
         news_title = self.news_titles[docids]
         return news_title
-    # 获取后续训练过程中的candi_title
 
     def __get_news_qua(self, docids):
 
@@ -111,7 +109,7 @@ class RecContrastiveTextDataset(Dataset):
         return news_title, news_qua_labels
 
     def __get_news_cont(self, docids):
-        # docids包含多个id 需要对每一个进行处理 获得neg_news_title
+
         neg_news_titles = []
         cont_labels = []
         news_titles = []
@@ -122,10 +120,8 @@ class RecContrastiveTextDataset(Dataset):
             news_titles.append(news_title)
             news_qua_labels.append(news_qua_label)
 
-            label = int(np.sum(news_qua_label) > 0)  # sum大于0就是[1],反之是[0]
-            # 选择一个与anchor_label不同的标签
-            # negative_label = 1 - anchor_label  # 对于二分类问题，这是有效的
-            # N好 C坏 1   N坏C好 0
+            label = int(np.sum(news_qua_label) > 0)
+
             if (label == 0):
                 negative_label = random.choice(
                     list(range(1, len(self.qua_labels[docids]))))
@@ -146,10 +142,10 @@ class RecContrastiveTextDataset(Dataset):
         sess_id = self.sess_ids[idx]
 
         news_titles, neg_news_titles, news_qua_labels, cont_labels = self.__get_news_cont(
-            sess_id)  # 获取每一个sess的new_title和news_qua 作为candi_title和qua
+            sess_id)
         user_id = self.user_ids[idx]
         clicked_ids = self.clicked_news[user_id]
-        user_title = self.__get_news(clicked_ids)  # 每一个用户的true_click(50,30)
+        user_title = self.__get_news(clicked_ids)
 
         rec_label = self.rec_labels[idx].argmax(axis=-1)
         return (news_titles, neg_news_titles, news_qua_labels, cont_labels, user_title, rec_label)
@@ -287,7 +283,7 @@ class NewsQuaEncoder(nn.Module):
 # %%
 # model for multiDim classifer
 NUM_DIMENSIONS = 3
-NUM_CLASSES = [2, 2, 2]  # 每个维度的类别数量
+NUM_CLASSES = [2, 2, 2]
 
 
 class MultiDimTextClassifier(nn.Module):
