@@ -240,7 +240,6 @@ class UserEncoder(nn.Module):
         elif self.mode == 'GRU':
             user_vecs = x  # bz,50,256
             user_vec, _ = self.GRU(user_vecs)  # bz,50,256   1,50,256
-            # 选择输出张量的最后一个时间步
             user_vec = user_vec[:, -1, :]
 
         return user_vec
