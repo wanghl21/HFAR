@@ -7,7 +7,7 @@ do
     for alpha in "${parameters_alpha[@]}"
     do
     echo "parameters: $method" "$alpha"
-    python qua_rec_classifier_contrastive_learning.py "$method" "$alpha"
+    python moralrec.py "$method" "$alpha"
     done
 done
 echo "done！"

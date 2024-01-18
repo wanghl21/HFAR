@@ -7,117 +7,6 @@ import torch
 import tqdm
 
 
-class MultiLabelMetrics:
-    def __init__(self):
-        self.TP = 0.0
-        self.TN = 0.0
-        self.FP = 0.0
-        self.FN = 0.0
-        self.total_correct = 0.0
-        self.total_samples = 0.0
-
-    def update(self, y_pred, y_true, threshold=0.5):
-        y_pred_binary = (y_pred > threshold).float()
-
-        self.TP += (y_pred_binary * y_true).sum().item()
-        self.TN += ((1 - y_pred_binary) * (1 - y_true)).sum().item()
-        self.FP += (y_pred_binary * (1 - y_true)).sum().item()
-        self.FN += ((1 - y_pred_binary) * y_true).sum().item()
-
-        self.total_correct += ((y_pred_binary == y_true).sum(dim=1)
-                               == y_true.size(1)).float().sum().item()
-        self.total_samples += y_true.size(0)
-
-    def results(self):
-        accuracy = self.total_correct / self.total_samples
-
-        precision = self.TP / (self.TP + self.FP + 1e-10)
-        recall = self.TP / (self.TP + self.FN + 1e-10)
-
-        f1 = 2 * precision * recall / (precision + recall + 1e-10)
-
-        return accuracy, precision, recall, f1
-
-
-class MultiLabelMetrics_macro_f1:
-    def __init__(self, num_classes):
-        self.TP = torch.zeros(num_classes).cuda()
-        self.FP = torch.zeros(num_classes).cuda()
-        self.FN = torch.zeros(num_classes).cuda()
-
-    def update(self, y_pred, y_true, threshold=0.5):
-        y_pred_binary = (y_pred > threshold).float()
-
-        self.TP += (y_pred_binary * y_true).sum(dim=0)
-        self.FP += (y_pred_binary * (1 - y_true)).sum(dim=0)
-        self.FN += ((1 - y_pred_binary) * y_true).sum(dim=0)
-
-    def macro_f1(self):
-        precision = self.TP / (self.TP + self.FP + 1e-10)
-        recall = self.TP / (self.TP + self.FN + 1e-10)
-
-        f1 = 2 * precision * recall / (precision + recall + 1e-10)
-        return f1.mean().item()
-
-
-class MultiLabelMetrics_class:
-    def __init__(self, num_classes):
-        self.TP = torch.zeros(num_classes).cuda()
-        self.TN = torch.zeros(num_classes).cuda()
-        self.FP = torch.zeros(num_classes).cuda()
-        self.FN = torch.zeros(num_classes).cuda()
-
-    def update(self, y_pred, y_true, threshold=0.5):
-        y_pred_binary = (y_pred > threshold).float()
-        self.TP += (y_pred_binary * y_true).sum(dim=0)
-        self.TN += ((1 - y_pred_binary) * (1 - y_true)).sum(dim=0)
-        self.FP += (y_pred_binary * (1 - y_true)).sum(dim=0)
-        self.FN += ((1 - y_pred_binary) * y_true).sum(dim=0)
-
-    def results(self):
-        precision = self.TP / (self.TP + self.FP + 1e-10)
-        recall = self.TP / (self.TP + self.FN + 1e-10)
-        f1 = 2 * precision * recall / (precision + recall + 1e-10)
-        accuracy = (self.TP + self.TN) / (self.TP +
-                                          self.TN + self.FP + self.FN + 1e-10)
-
-        return accuracy, precision, recall, f1
-
-
-class AllZeroClassMetrics:
-    def __init__(self):
-        self.true_all_zeros = 0.0
-        self.predicted_all_zeros = 0.0
-        self.correctly_predicted_all_zeros = 0.0
-        self.false_negatives = 0.0
-        self.false_positives = 0.0
-
-    def update(self, y_pred, y_true, threshold=0.5):
-        y_pred_binary = (y_pred > threshold).float()
-
-        true_zeros_mask = (y_true.sum(dim=1) == 0)
-        pred_zeros_mask = (y_pred_binary.sum(dim=1) == 0)
-
-        self.true_all_zeros += true_zeros_mask.sum().item()
-        self.predicted_all_zeros += pred_zeros_mask.sum().item()
-        self.correctly_predicted_all_zeros += (
-            true_zeros_mask & pred_zeros_mask).sum().item()
-        self.false_negatives += (true_zeros_mask & ~
-                                 pred_zeros_mask).sum().item()
-        self.false_positives += (~true_zeros_mask &
-                                 pred_zeros_mask).sum().item()
-
-    def results(self):
-        accuracy = self.correctly_predicted_all_zeros / \
-            (self.true_all_zeros + 1e-10)
-        precision = self.correctly_predicted_all_zeros / \
-            (self.predicted_all_zeros + 1e-10)
-        recall = self.correctly_predicted_all_zeros / \
-            (self.true_all_zeros + 1e-10)
-        f1 = 2 * precision * recall / (precision + recall + 1e-10)
-        return accuracy, precision, recall, f1
-
-
 def dcg_score(y_true, y_score, k=10):
     order = np.argsort(y_score)[::-1]
     y_true = np.take(y_true, order[:k])
@@ -155,10 +44,9 @@ def qua_acc(y_true, y_hat):
 
 
 def qua_accuracy(predictions, labels, threshold=0.5):
-    # 将概率转化为0或1
     preds = (predictions > threshold).float()
-    correct = (preds == labels).float().sum(dim=1)  # 每个样本的正确标签数
-    acc = (correct == labels.shape[1]).sum()  # 完全正确的样本数
+    correct = (preds == labels).float().sum(dim=1)
+    acc = (correct == labels.shape[1]).sum()
     return acc / len(labels)
 
 
@@ -341,10 +229,10 @@ def evaluate_model_qua_baseline(test_impressions, user_scoring, news_scoring, ne
         order = np.argsort(score)[::-1]
         nvq = np.array(nvq)
 
-        nvq1 = qua_score_overall(nvq, order, k=1)  # 判断前1的质量
-        nvq3 = qua_score_overall(nvq, order, k=3)  # 判断前3的质量
-        nvq5 = qua_score_overall(nvq, order, k=5)  # 判断前5的质量
-        nvq10 = qua_score_overall(nvq, order, k=10)  # 判断前10的质量
+        nvq1 = qua_score_overall(nvq, order, k=1)
+        nvq3 = qua_score_overall(nvq, order, k=3)
+        nvq5 = qua_score_overall(nvq, order, k=5)
+        nvq10 = qua_score_overall(nvq, order, k=10)
 
         AUC.append(auc)
         MRR.append(mrr)

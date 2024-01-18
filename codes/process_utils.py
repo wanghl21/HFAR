@@ -158,17 +158,16 @@ def get_train_input(session, npratio, news_index):
     for sess_id in range(len(session)):
         sess = session[sess_id]
         _, poss, negs = sess
-        # 每一个用户的pos记录随机sample npratio个neg 然后带上uid组成一条sess
         for i in range(len(poss)):
             pos = poss[i]
-            neg = newsample(negs, npratio)  # 随机采样npratio个负样本
+            neg = newsample(negs, npratio)
             sess_pos.append(pos)
             sess_neg.append(neg)
             user_id.append(sess_id)
     # print(len(user_id))
     sess_all = np.zeros((len(sess_pos), 1+npratio), dtype='int32')
     label = np.zeros((len(sess_pos), 1+npratio))
-    # 下面是把 pos['Nxxx']转成news index
+
     for sess_id in range(sess_all.shape[0]):
         pos = sess_pos[sess_id]
         negs = sess_neg[sess_id]
@@ -251,7 +250,6 @@ def get_news_qua_scoring(news_encoder, fc, news_title):
         data = torch.LongTensor(data).cuda()
         # print(data.shape)
         ns = news_encoder(data)
-        # 这里是fc以后的结果
         ns = fc(ns)
         ns = ns.detach().to('cpu').numpy()
         news_qua_scorings.append(ns)
