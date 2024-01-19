@@ -33,8 +33,8 @@ print(f"method：{method}")
 
 # %%
 # Path
-data_root_path = '/data/whl/MIND_Small-Release'
-embedding_path = '/data/whl/MIND_Small-Release/embedding_path/'
+data_root_path = '/data/MIND_Small-Release'
+embedding_path = '/data/MIND_Small-Release/embedding_path/'
 
 # %%
 # read news content
@@ -89,7 +89,7 @@ else:
 # %%
 # model evaluate
 # for recommand
-path = "/data/whl/Quality_rec/"
+path = "/data/Moralrec/"
 num_epochs = 7
 
 

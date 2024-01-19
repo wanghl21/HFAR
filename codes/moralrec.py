@@ -396,7 +396,7 @@ class_weights
 # %%
 # model evaluate
 
-path = "/data/Quality_rec/"
+path = "/data/Moralrec/"
 num_epochs = 7
 
 
