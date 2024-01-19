@@ -46,12 +46,10 @@ news_title, news_vert, news_subvert = get_doc_input(
 
 # %%
 # read news quality
-news_qua_dict = read_news_quality(
-    data_root_path, 'docs_quality_fators.tsv', news_index)
+news_qua_dict = read_news_morality(
+    data_root_path, 'docs_morality_fators.tsv', news_index)
 news_qua = np.asarray(news_qua_dict)
 news_qua.shape
-
-news_qua = news_qua[:, [1, 3, 4]]
 news_title.shape
 
 # %%

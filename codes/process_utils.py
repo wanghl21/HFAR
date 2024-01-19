@@ -312,8 +312,8 @@ def Log(loss, acc, per, K=2):
           (loss, acc, '>' * num1, '#'*num2, 100*per, '%'), flush=True, end='')
 
 
-def read_news_quality(path, filenames, news_index):
-    print("read news quality...")
+def read_news_morality(path, filenames, news_index):
+    print("read news morality...")
     with open(os.path.join(path, filenames)) as f:
         lines = f.readlines()
     news_num = len(lines)+1
@@ -323,18 +323,10 @@ def read_news_quality(path, filenames, news_index):
         doc_id = splites[0]
         doc_index = news_index[doc_id]
         for splite in splites:
-            if ('fake news:1' in splite):
-                fn = 1
-            elif ('fake news:0' in splite):
-                fn = 0
             if ('clickbait headlines:1' in splite):
                 ch = 1
             elif ('clickbait headlines:0' in splite):
                 ch = 0
-            if ('gender discrimination:1' in splite):
-                gd = 1
-            elif ('gender discrimination:0' in splite):
-                gd = 0
             if ('racial discrimination:1' in splite):
                 rd = 1
             elif ('racial discrimination:0' in splite):
@@ -345,32 +337,6 @@ def read_news_quality(path, filenames, news_index):
             elif ('violence:0' in splite):
                 vi = 0
 
-            if ('crime:1' in splite):
-                cr = 1
-            elif ('crime:0' in splite):
-                cr = 0
-
-            if ('pornographic tendency:1' in splite):
-                pt = 1
-            elif ('pornographic tendency:0' in splite):
-                pt = 0
-            if ('breaking news:1' in splite):
-                bn = 1
-            elif ('breaking news:0' in splite):
-                bn = 0
-
-            if ('news writing standards:1' in splite):
-                nw = 1
-            elif ('news writing standards:0' in splite):
-                nw = 0
-            if ('adult audience:1' in splite):
-                adu = 1
-            elif ('adult audience:0' in splite):
-                adu = 0
-            if ('adolescent audience:1' in splite):
-                ado = 1
-            elif ('adolescent audience:0' in splite):
-                ado = 0
-        news_qua[doc_index, :] = [fn, ch, gd, rd, vi, cr, pt, bn, nw, adu, ado]
+        news_qua[doc_index, :] = [ch, rd, vi]
 
     return news_qua
