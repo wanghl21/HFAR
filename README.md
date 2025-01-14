@@ -1,12 +1,12 @@
 # MoralRec
-Datasets, codes and some materials for paper 《**Learning Moral Alignment from LLMs in Content Reconmmendation**》
+Datasets, codes and some materials for paper 《**Learning Human Feedback from Large Language Models for Content Quality-aware Recommendation**》
 
 ## Datasets
 MIND Dataset: MIcrosoft News Dataset Download Url: [https://msnews.github.io/](https://msnews.github.io/)
 
 The data attribute and content quality attribute of MIND-Small and MIND-Large dataset:
 
-|  | **Data Attribute** |  |  | **Content  Morality Attribute** |  |  |
+|  | **Data Attribute** |  |  | **Content  Quality Attribute** |  |  |
 | --- | --- | --- | --- | --- | --- | --- |
 |  | #Impressions | #Clicks | #News | #Clickbait headlines | #Racial discrimination | #Violence |
 | MIND-small | 230,117 | 347,727 | 65,238 | 1937 | 729 | 11551 |
@@ -33,24 +33,24 @@ transformers==4.29.1
 **process_utils.py:**
 > codes including the functions that process the raw data like reading item content and parse user behaviors.
 
-**moralrec.py:**
-> codes for training the morality-aware recommendation models.
+**rec.py:**
+> codes for training the quality-aware recommendation models.
 
-**inference_moralrec.py:**
-> codes for morality-aware recommendation inference. 
+**inference_rec.py:**
+> codes for quality-aware recommendation inference. 
 
 
 ### **Training **
 ```bash
-./ run_moralrec.sh
+./ run_rec.sh
 ```
 ### Inference
 ```bash
-python inference_moralrec.py $method $beta
+python inference_rec.py $method $beta
 ```
 
 ## Other Materials
-《Some collected examples that people blame for negative morality recommended content in recommendation platforms.》
+《Some collected examples that people blame for negative quality recommended content in recommendation platforms.》
 > we collect some examples to verify that unethical recommended content in real systems have caused a lot of blame from users on social network platform.
 
 (Warning: this document contains example data that may be offensive or harmful. )
