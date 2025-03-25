@@ -1,16 +1,10 @@
-# MoralRec
+# HFAR
 Datasets, codes and some materials for paper 《**Learning Human Feedback from Large Language Models for Content Quality-aware Recommendation**》
 
 ## Datasets
 MIND Dataset: MIcrosoft News Dataset Download Url: [https://msnews.github.io/](https://msnews.github.io/)
 
-The data attribute and content quality attribute of MIND-Small and MIND-Large dataset:
-
-|  | **Data Attribute** |  |  | **Content  Quality Attribute** |  |  |
-| --- | --- | --- | --- | --- | --- | --- |
-|  | #Impressions | #Clicks | #News | #Clickbait headlines | #Racial discrimination | #Violence |
-| MIND-small | 230,117 | 347,727 | 65,238 | 1937 | 729 | 11551 |
-| MIND-large | 15,777,377 | 24,155,470 | 104,151 | 1950 | 985 | 17560 |
+EB-NeRD Dataset: Download Url: [https://recsys.eb.dk/dataset/](https://recsys.eb.dk/dataset/)
 
 
 ## Codes
@@ -50,7 +44,9 @@ python inference_rec.py $method $beta
 ```
 
 ## Other Materials
-《Some collected examples that people blame for negative quality recommended content in recommendation platforms.》
+Supplementary Information for “Learning Human Feedback
+from Large Language Models for Content Quality-aware
+Recommendation”.
 > we collect some examples to verify that unethical recommended content in real systems have caused a lot of blame from users on social network platform.
 
 (Warning: this document contains example data that may be offensive or harmful. )
